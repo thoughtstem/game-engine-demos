@@ -1,1 +1,0 @@
-("6.9" ("8a5595c3b54c94480775076e0a72b5cf57be52e5" . "541fa342d30d70f48a8c048c8977d440fe4ecf1f") (collects #"game-engine" #"spaceship-game" #"v1" #"spaceship-game.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
