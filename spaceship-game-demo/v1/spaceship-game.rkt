@@ -1,7 +1,7 @@
 #lang racket
 
 (require game-engine
-        game-engine-demos-common) 
+         game-engine-demos-common) 
 
 (define WIDTH  640)
 (define HEIGHT 480)

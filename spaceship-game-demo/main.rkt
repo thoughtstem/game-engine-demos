@@ -9,7 +9,7 @@
     (syntax-case stx ()
       [(_ x)
        (with-syntax (;[path (format "./v~a/spaceship-game.rkt" (syntax->datum #'x))]
-                     [prefix-id (format-id stx "spaceship-game/v~a/spaceship-game" (syntax->datum #'x))])
+                     [prefix-id (format-id stx "spaceship-game-demo/v~a/spaceship-game" (syntax->datum #'x))])
            #`(begin
                ;(provide (rename-out [start prefix-id]))
                (require prefix-id)))
@@ -21,7 +21,7 @@
     (module-path-index-resolve
      
       (module-path-index-join
-       (string->symbol (format "spaceship-game/v~a/spaceship-game" n))
+       (string->symbol (format "spaceship-game-demo/v~a/spaceship-game" n))
        #f)))
   (define path (path->string (resolved-module-path-name rmp)))
     
