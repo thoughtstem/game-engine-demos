@@ -6,5 +6,5 @@
 ;(define scribblings '(("manual.scrbl" ())))
 
 
-(define deps '("game-engine"))
+(define deps '("game-engine-demos-common"))
 

@@ -1,11 +1,7 @@
 #lang racket
 
-(require game-engine/main
-         game-engine/spaceship-game/common/instructions
-         game-engine/spaceship-game/common/game-over-screen
-         game-engine/spaceship-game/assets/ore-sprite
-         game-engine/spaceship-game/assets/spaceship-sprite
-         game-engine/spaceship-game/assets/space-bg-generator)
+(require game-engine
+         game-engine-demos-common) 
 
 (define WIDTH  800)
 (define HEIGHT 800)

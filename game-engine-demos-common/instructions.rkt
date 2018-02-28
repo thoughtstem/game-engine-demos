@@ -1,8 +1,9 @@
 #lang racket
 
+(require game-engine)
+
 (provide instructions)
 
-(require "../../game-engine.rkt")
 
 (define (screen w h msg color)
   (new-sprite (list (overlay (text msg 30 color)
@@ -14,4 +15,5 @@
                   #:position   (posn (/ w 2)
                                      (/ h 2))
                   #:name       "ui"
-                  #:components (after-time 0 50 die)))
+                  #:components (after-time 50 die)
+                  ))

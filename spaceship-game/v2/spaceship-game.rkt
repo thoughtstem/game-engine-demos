@@ -1,7 +1,7 @@
 #lang racket
 
-(require game-engine/main
-         game-engine/spaceship-game/common/instructions)
+(require game-engine
+         game-engine-demos-common) 
 
 (define WIDTH  640)
 (define HEIGHT 480)
@@ -26,4 +26,4 @@
 (start-game (instructions WIDTH HEIGHT "Use arrow keys to move")
             spaceship-entity
             bg-entity)
-  
+   

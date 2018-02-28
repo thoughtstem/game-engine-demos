@@ -2,7 +2,7 @@
 
 (provide game-over-screen)
 
-(require "../../game-engine.rkt")
+(require game-engine)
 
 (define (end-screen w h msg color)
   (new-sprite (list (overlay (text msg 30 color)

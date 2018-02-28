@@ -2,7 +2,7 @@
 
 (provide ore-sprite)
 
-(require "../../game-engine.rkt")
+(require game-engine)
 
 (define ore-sheet (bitmap/url "http://twicetwo.com/gallery/cgi/powerups.png"))
 (define (ore-sprite i)

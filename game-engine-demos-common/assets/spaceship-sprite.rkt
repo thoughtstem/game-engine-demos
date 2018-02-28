@@ -3,7 +3,7 @@
 (provide spaceship-sprite
          spaceship-animator)
 
-(require "../../game-engine.rkt")
+(require game-engine)
 
 (define spaceship-sheet (bitmap/url "http://i.imgur.com/8zY5sBR.png"))
 (define spaceship-sprite
@@ -29,4 +29,4 @@
                  #:speed       1))
 
 
-(test-character spaceship-animator)
+;(test-character spaceship-animator)
