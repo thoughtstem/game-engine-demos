@@ -1,0 +1,1 @@
+("6.9" ("cc1e3f4c22368019d1cd5f0725de476afd13203a" . "d124e7d31f97aee0d07fc6ea57cc08545f9cd410") (collects #"game-engine" #"game-engine.rkt") (collects #"game-engine" #"spaceship-game" #"assets" #"space-bg-generator.rkt") (collects #"game-engine" #"spaceship-game" #"common" #"instructions.rkt") (collects #"racket" #"main.rkt") (collects #"racket" #"runtime-config.rkt"))
