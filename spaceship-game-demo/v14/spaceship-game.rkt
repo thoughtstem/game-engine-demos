@@ -56,7 +56,7 @@
                                                       #:speed 5))
                                (after-time 75     die)  
                                (on-collide "ship" die)
-                               (spawner bullet2 10)))
+                               (spawner bullet2 30)))
 
 (define (lost? g e)
   (not (get-entity "ship" g)))
