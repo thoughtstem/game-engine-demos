@@ -52,7 +52,7 @@
                   #:components (every-tick (move-random #:speed 4))
                                (after-time 75     die)  
                                (on-collide "ship" die)
-                               (spawner (thunk* (bullet2)) 10)))
+                               (spawner (thunk* (bullet2)) 30)))
 
 (define (lost? g e)
   (not (get-entity "ship" g)))
