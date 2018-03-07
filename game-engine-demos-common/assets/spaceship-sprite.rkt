@@ -5,7 +5,7 @@
 
 (require game-engine)
 
-(define spaceship-sheet (bitmap/url "http://i.imgur.com/8zY5sBR.png"))
+(define spaceship-sheet (bitmap "spaceship-sheet.png"))
 (define spaceship-sprite
   (sheet->sprite spaceship-sheet
                  #:rows        4
