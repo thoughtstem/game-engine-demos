@@ -1,7 +1,7 @@
 #lang racket
 
 (require game-engine
-         game-engine-demos-common) 
+         game-engine-demos-common)
 
 (define WIDTH  640)
 (define HEIGHT 480)
@@ -49,8 +49,8 @@
                                     (circle 2 "solid" "orange")) 1)
                   #:position   (posn 100 100)
                   #:name       "bullet"
-                  #:components (every-tick (move-left #:min 0 #:speed 4))
-                               (after-time 100    die)  
+                  #:components (every-tick (move-left #:speed 4))
+                               (after-time 100    die)
                                (on-collide "ship" die)
                                (on-collide "wall" die)))
 
@@ -58,7 +58,7 @@
 (define (lost? g e)
   (not (get-entity "ship" g)))
 
-(define (won? g e) 
+(define (won? g e)
   (define speed (get-speed (get-entity "ship" g)))
   (>= speed 10))
 
@@ -76,11 +76,11 @@
             (wall-tile (posn 264 400))
             (wall-tile (posn 264 368))
             (wall-tile (posn 264 336))
-            
+
             (game-over-screen won? lost?)
             (spaceship-entity)
             (ore-entity (posn 320 350))
             (enemy-entity (posn 400 150))
             (enemy-entity (posn 400 250))
-            
+
             bg-entity)

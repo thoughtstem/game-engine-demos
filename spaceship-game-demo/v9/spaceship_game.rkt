@@ -1,7 +1,7 @@
 #lang racket
 
 (require game-engine
-         game-engine-demos-common) 
+         game-engine-demos-common)
 
 (define WIDTH  640)
 (define HEIGHT 480)
@@ -30,7 +30,7 @@
   (sprite->entity (spaceship-animator 'left)
                   #:position    p
                   #:name        "enemy"
-                  #:components  (every-tick (move-up-and-down #:min   0  
+                  #:components  (every-tick (move-up-and-down #:min   0
                                                               #:max   HEIGHT
                                                               #:speed 10))
                                 (spawner bullet 20)))
@@ -42,15 +42,14 @@
                                     (circle 20 "solid" "orange")) 1)
                   #:position   (posn 100 100)
                   #:name       "bullet"
-                  #:components (every-tick (move-left #:min   0
-                                                      #:speed 5))
-                               (after-time 50     die)  
+                  #:components (every-tick (move-left #:speed 5))
+                               (after-time 50     die)
                                (on-collide "ship" die)))
 
 (define (lost? g e)
   (not (get-entity "ship" g)))
 
-(define (won? g e) 
+(define (won? g e)
   (define speed (get-speed (get-entity "ship" g)))
   (>= speed 10))
 
