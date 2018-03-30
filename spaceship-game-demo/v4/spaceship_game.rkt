@@ -9,7 +9,8 @@
 (define bg-entity
   (sprite->entity (space-bg-sprite WIDTH HEIGHT 100)
                   #:name     "bg"
-                  #:position (posn 0 0)))
+                  #:position (posn 0 0)
+                  #:components (static)))
 
 (define spaceship-entity
   (sprite->entity spaceship-sprite

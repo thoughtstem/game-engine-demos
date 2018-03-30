@@ -9,7 +9,8 @@
 (define bg-entity
   (sprite->entity (space-bg-sprite WIDTH HEIGHT 100)
                   #:name     "bg"
-                  #:position (posn 0 0)))
+                  #:position (posn 0 0)
+                  #:components (static)))
 
 (define (spaceship-entity)
   (sprite->entity spaceship-sprite
@@ -40,7 +41,7 @@
                                     (circle 2 "solid" "orange")
                                     (circle 2 "solid" "yellow")
                                     (circle 2 "solid" "orange")) 1)
-                  #:position   (posn 100 100)
+                  #:position   (posn -16 0)
                   #:name       "bullet"
                   #:components (every-tick (move-random #:speed 8))
                                (after-time 10     die)
@@ -49,7 +50,7 @@
 (define bullet
   (sprite->entity (sprite-map (lambda (i)
                                 (scale 0.35 i)) (spaceship-animator 'left))
-                  #:position   (posn 100 100)
+                  #:position   (posn 0 0)
                   #:name       "bullet"
                   #:components (every-tick (move-left #:speed 3))
                                (after-time 75     die)

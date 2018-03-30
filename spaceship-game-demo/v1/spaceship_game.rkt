@@ -9,7 +9,8 @@
 (define bg-entity
   (sprite->entity (rectangle WIDTH HEIGHT "solid" "black")
                   #:name     "bg"
-                  #:position (posn 0 0)))
+                  #:position (posn 0 0)
+                  #:components (static)))
 
 (define spaceship-entity
   (sprite->entity (circle 20 "solid" "red")

@@ -9,13 +9,15 @@
 (define bg-entity
   (sprite->entity (space-bg-sprite WIDTH HEIGHT 100)
                   #:name     "bg"
-                  #:position (posn 0 0)))
+                  #:position (posn 0 0)
+                  #:components (static)))
 
 (define (wall-tile p)
   (sprite->entity (scale 0.5 (crop 0 0 62 62 (bitmap "./tiles.jpg"))) ;Move to asset helper...
                   #:name       "wall"
                   #:position   p
-                  #:components (physical-collider)))
+                  #:components (physical-collider)
+                               (static)))
 
 (define (spaceship-entity)
   (sprite->entity (sprite-map shrink spaceship-sprite)
@@ -47,7 +49,7 @@
                                     (circle 2 "solid" "orange")
                                     (circle 2 "solid" "yellow")
                                     (circle 2 "solid" "orange")) 1)
-                  #:position   (posn 100 100)
+                  #:position   (posn -16 0)
                   #:name       "bullet"
                   #:components (every-tick (move-left #:speed 4))
                                (after-time 100    die)
