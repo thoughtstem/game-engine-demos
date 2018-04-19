@@ -16,7 +16,8 @@
   (sprite->entity (square 1 "solid" (make-color 0 0 0 0))
                   #:position   (posn 0 0)
                   #:name       "ui"
-                  #:components (hidden)
+                  #:components (static)
+                               (hidden)
                                (every-tick (maybe-end won? lost?))))
 
 (define (maybe-end won? lost?)
