@@ -6,7 +6,8 @@
   (all-from-out "./assets/ore-sprite.rkt")
   (all-from-out "./assets/spaceship-sprite.rkt")
   (all-from-out "./assets/space-bg-generator.rkt")
-  (all-from-out "./borders.rkt"))
+  (all-from-out "./borders.rkt")
+  (all-from-out "./sheet-generators.rkt"))
 
 (require "./game-over-screen.rkt")
 (require "./instructions.rkt")
@@ -14,3 +15,4 @@
 (require "./assets/spaceship-sprite.rkt")
 (require "./assets/space-bg-generator.rkt")
 (require "./borders.rkt")
+(require "./sheet-generators.rkt")
