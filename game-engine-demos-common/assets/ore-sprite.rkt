@@ -4,7 +4,7 @@
 
 (require game-engine)
 
-(define ore-sheet (bitmap/url "http://twicetwo.com/gallery/cgi/powerups.png"))
+(define ore-sheet (bitmap "powerups.png"))
 (define (ore-sprite i)
   (sheet->sprite ore-sheet
                  #:rows        20
