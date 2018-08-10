@@ -6,11 +6,18 @@
          HEY-SOUND
          ZOOP-SOUND)
 
-(require rsound)
+(require rsound
+         racket/runtime-path)
 
-(define DUCK-SOUND (resample-to-rate 48000 (rs-read (string->path "duck.wav"))))
-(define CAT-SOUND  (resample-to-rate 48000 (rs-read (string->path "meow2.wav"))))
-(define DOG-SOUND  (resample-to-rate 48000 (rs-read (string->path "dog2.wav"))))
-(define HEY-SOUND  (resample-to-rate 48000 (rs-read (string->path "hey.wav"))))
-(define ZOOP-SOUND (resample-to-rate 48000 (rs-read (string->path "zoop.wav"))))
+(define-runtime-path duck-path "duck.wav")
+(define-runtime-path cat-path "meow2.wav")
+(define-runtime-path dog-path "dog2.wav")
+(define-runtime-path hey-path "hey.wav")
+(define-runtime-path zoop-path "zoop.wav")
+
+(define DUCK-SOUND (resample-to-rate 48000 (rs-read duck-path)))
+(define CAT-SOUND  (resample-to-rate 48000 (rs-read cat-path)))
+(define DOG-SOUND  (resample-to-rate 48000 (rs-read dog-path)))
+(define HEY-SOUND  (resample-to-rate 48000 (rs-read hey-path)))
+(define ZOOP-SOUND (resample-to-rate 48000 (rs-read zoop-path)))
 
