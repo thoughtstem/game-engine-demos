@@ -6,7 +6,20 @@
 (require "./assets/sound-samples.rkt")
 (require game-engine)
 
+(define (last-dialog-and-near? name)
+  (lambda (g e)
+    (and ((near-entity? name) g e)
+         (get-entity "npc dialog" g)
+         (last-dialog? g e)
+         )))
 
+(define (not-last-dialog-and-near? name)
+  (lambda (g e)
+    (and ((near-entity? name) g e)
+         (get-entity "npc dialog" g)
+         (not-last-dialog? g e)
+         )))
+  
 ; ==== NPC CREATOR ====
 (define (create-npc #:sprite sprite
                     #:name        name
@@ -32,27 +45,27 @@
                                                    (counter 0)
                                                    (stop-on-edge)
                                                    (on-key 'enter
-                                                           #:rule (npc-spoke-and-near? "player")
-                                                           (do-many (set-speed spd)
+                                                           #:rule (last-dialog-and-near? "player")  ;(npc-spoke-and-near? "player")
+                                                           (do-many ;(set-counter 0)
+                                                                    (set-speed spd)
                                                                     (start-animation)))))
   (define dialog-entity
     (if simple-dialog?
         (add-components base-entity
-                        ;(every-tick (move))
-                        ;(do-every 50 (random-direction 0 360))
                         (on-key 'space #:rule (ready-to-speak-and-near? "player")
                                 (do-many (point-to "player")
+                                         ;(set-counter 0)
                                          (set-speed 0)
                                          (stop-animation)
                                          (next-dialog dialog #:sound SHORT-BLIP-SOUND))))
         (add-components base-entity
-                        ;(every-tick (move-left-right #:min move-min  #:max move-max))
                         (on-rule (player-spoke-and-near? "player") (do-many (set-speed 0)
                                                                             (stop-animation)
                                                                             (point-to "player")))
                         (on-key 'enter
                                 #:rule (player-spoke-and-near? "player")
-                                (do-many (next-response dialog #:sound SHORT-BLIP-SOUND)
+                                (do-many ;(set-counter 0)
+                                         (next-response dialog #:sound SHORT-BLIP-SOUND)
                                          (play-sound OPEN-DIALOG-SOUND))))))
   (cond
     [(eq? mode 'still)  dialog-entity]
