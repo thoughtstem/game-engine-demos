@@ -28,7 +28,8 @@
                     #:dialog      dialog
                     #:mode        [mode 'still]
                     #:speed       [spd 2]
-                    #:target      [target "player"])
+                    #:target      [target "player"]
+                    #:sound       [sound #t])
   (define simple-dialog? (animated-sprite? (first dialog)))
   (define move-min (- (posn-x position) 50))
   (define move-max (+ (posn-x position) 50))
@@ -38,7 +39,7 @@
                                       #:components (static)
                                                    (physical-collider)
                                                    (active-on-bg tile)
-                                                   (sound-stream)
+                                                   ;(sound-stream)
                                                    (speed spd)
                                                    (direction 0)
                                                    (rotation-style 'left-right)
@@ -49,16 +50,21 @@
                                                            (do-many ;(set-counter 0)
                                                                     (set-speed spd)
                                                                     (start-animation)))))
+  (define base-with-sound-entity
+    (if sound
+        (add-component base-entity (sound-stream))
+        base-entity))
+  
   (define dialog-entity
     (if simple-dialog?
-        (add-components base-entity
+        (add-components base-with-sound-entity
                         (on-key 'space #:rule (ready-to-speak-and-near? "player")
                                 (do-many (point-to "player")
                                          ;(set-counter 0)
                                          (set-speed 0)
                                          (stop-animation)
                                          (next-dialog dialog #:sound SHORT-BLIP-SOUND))))
-        (add-components base-entity
+        (add-components base-with-sound-entity
                         (on-rule (player-spoke-and-near? "player") (do-many (set-speed 0)
                                                                             (stop-animation)
                                                                             (point-to "player")))

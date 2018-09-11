@@ -11,7 +11,9 @@
          OPEN-DIALOG-SOUND
          CLOSE-DIALOG-SOUND)
 
-(require rsound
+(require (only-in rsound
+                  resample-to-rate
+                  rs-read)
          racket/runtime-path)
 
 (define-runtime-path duck-path "duck.wav")
