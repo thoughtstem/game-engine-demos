@@ -10,6 +10,7 @@
   (all-from-out "./borders.rkt")
   (all-from-out "./sheet-generators.rkt")
   (all-from-out "./npc-generators.rkt")
+  (all-from-out "./character-generator.rkt")
   )
 
 (require "./game-over-screen.rkt")
@@ -21,3 +22,4 @@
 (require "./borders.rkt")
 (require "./sheet-generators.rkt")
 (require "./npc-generators.rkt")
+(require "./character-generator.rkt")

@@ -29,7 +29,8 @@
                     #:mode        [mode 'still]
                     #:speed       [spd 2]
                     #:target      [target "player"]
-                    #:sound       [sound #t])
+                    #:sound       [sound #t]
+                    #:scale       [scale 1])
   (define simple-dialog? (animated-sprite? (first dialog)))
   (define move-min (- (posn-x position) 50))
   (define move-max (+ (posn-x position) 50))
@@ -45,6 +46,7 @@
                                                    (rotation-style 'left-right)
                                                    (counter 0)
                                                    (stop-on-edge)
+                                                   (on-start (scale-sprite scale))
                                                    (on-key 'enter
                                                            #:rule (last-dialog-and-near? "player")  ;(npc-spoke-and-near? "player")
                                                            (do-many ;(set-counter 0)

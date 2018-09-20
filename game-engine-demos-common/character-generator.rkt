@@ -17,10 +17,13 @@
 
 (require 2htdp/image)
 (require game-engine)
+(require racket/runtime-path)
+
+(define-runtime-path package-path "assets")
 
 (define (i type num)
-  (bitmap/file (format
-                "./~a-~a.png" type num)))
+  (bitmap/file (build-path package-path (format
+                                         "~a-~a.png" type num))))
 
 
 (define naked-body  (i "body" 1))
