@@ -11,7 +11,7 @@
          OPEN-DIALOG-SOUND
          CLOSE-DIALOG-SOUND)
 
-(require #;(only-in rsound
+(require (only-in rsound
                   resample-to-rate
                   rs-read)
          racket/runtime-path)
@@ -28,15 +28,15 @@
 (define-runtime-path open-dialog-path "open_dialog.wav")
 (define-runtime-path close-dialog-path "close_dialog.wav")
 
-(define DUCK-SOUND '() #;(resample-to-rate 48000 (rs-read duck-path)))
-(define CAT-SOUND  '() #;(resample-to-rate 48000 (rs-read cat-path)))
-(define DOG-SOUND  '() #;(resample-to-rate 48000 (rs-read dog-path)))
-(define HEY-SOUND  '() #;(resample-to-rate 48000 (rs-read hey-path)))
-(define ZOOP-SOUND '() #;(resample-to-rate 48000 (rs-read zoop-path)))
+(define DUCK-SOUND #;'() (resample-to-rate 48000 (rs-read duck-path)))
+(define CAT-SOUND  #;'() (resample-to-rate 48000 (rs-read cat-path)))
+(define DOG-SOUND  #;'() (resample-to-rate 48000 (rs-read dog-path)))
+(define HEY-SOUND  #;'() (resample-to-rate 48000 (rs-read hey-path)))
+(define ZOOP-SOUND #;'() (resample-to-rate 48000 (rs-read zoop-path)))
 
-(define PICKUP-SOUND       '() #;(resample-to-rate 48000 (rs-read pickup-path)))
-(define BLIP-SOUND         '() #;(resample-to-rate 48000 (rs-read blip-path)))
-(define SHORT-BLIP-SOUND   '() #;(resample-to-rate 48000 (rs-read short-blip-path)))
-(define OPEN-DIALOG-SOUND  '() #;(resample-to-rate 48000 (rs-read open-dialog-path)))
-(define CLOSE-DIALOG-SOUND '() #;(resample-to-rate 48000 (rs-read close-dialog-path)))
+(define PICKUP-SOUND       #;'() (resample-to-rate 48000 (rs-read pickup-path)))
+(define BLIP-SOUND         #;'() (resample-to-rate 48000 (rs-read blip-path)))
+(define SHORT-BLIP-SOUND   #;'() (resample-to-rate 48000 (rs-read short-blip-path)))
+(define OPEN-DIALOG-SOUND  #;'() (resample-to-rate 48000 (rs-read open-dialog-path)))
+(define CLOSE-DIALOG-SOUND #;'() (resample-to-rate 48000 (rs-read close-dialog-path)))
 
