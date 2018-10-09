@@ -12,6 +12,8 @@
   (all-from-out "./sheet-generators.rkt")
   (all-from-out "./npc-generators.rkt")
   (all-from-out "./character-generator.rkt")
+  (all-from-out "./universal-character-generator.rkt")
+  (all-from-out "./sith-character-generator.rkt")
   )
 
 (require "./game-over-screen.rkt")
@@ -25,3 +27,5 @@
 (require "./sheet-generators.rkt")
 (require "./npc-generators.rkt")
 (require "./character-generator.rkt")
+(require "./universal-character-generator.rkt")
+(require "./sith-character-generator.rkt")
