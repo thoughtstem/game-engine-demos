@@ -34,7 +34,7 @@
                   #:components  (every-tick (move-up-and-down #:min   0
                                                               #:max   HEIGHT
                                                               #:speed 10))
-                                (spawner bullet 20)))
+                                (do-every 20 (spawn bullet))))
 
 (define (bullet2)
   (sprite->entity (new-sprite (list (circle 2 "solid" "red")
@@ -55,7 +55,7 @@
                   #:components (every-tick (move-left #:speed 3))
                                (after-time 75     die)
                                (on-collide "ship" die)
-                               (spawner (thunk* (bullet2)) 30)))
+                               (do-every 20 (spawn (thunk* bullet2)))))
 
 (define (lost? g e)
   (not (get-entity "ship" g)))

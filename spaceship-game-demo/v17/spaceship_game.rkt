@@ -42,7 +42,7 @@
   (sprite->entity (sprite-map shrink (spaceship-animator 'left))
                   #:position    p
                   #:name        "enemy"
-                  #:components  (spawner bullet 40)))
+                  #:components  (do-every 40 (spawn bullet))))
 
 (define bullet
   (sprite->entity (new-sprite (list (circle 2 "solid" "red")
