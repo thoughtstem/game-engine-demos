@@ -1,6 +1,8 @@
 #lang racket
 
-(provide create-npc)
+(provide create-npc
+         update-dialog
+         quest)
 ;(provide sheet->rainbow-tint-sheet)
 
 (require "./assets/sound-samples.rkt")
@@ -30,7 +32,9 @@
                     #:speed       [spd 2]
                     #:target      [target "player"]
                     #:sound       [sound #t]
-                    #:scale       [scale 1])
+                    #:scale       [scale 1]
+                    #:components  [c #f]
+                    . cs)
   (define simple-dialog? (animated-sprite? (first dialog)))
   (define move-min (- (posn-x position) 50))
   (define move-max (+ (posn-x position) 50))
@@ -51,7 +55,8 @@
                                                            #:rule (last-dialog-and-near? "player")  ;(npc-spoke-and-near? "player")
                                                            (do-many ;(set-counter 0)
                                                                     (set-speed spd)
-                                                                    (start-animation)))))
+                                                                    (start-animation)))
+                                                   (cons c cs)))
   (define base-with-sound-entity
     (if sound
         (add-component base-entity (sound-stream))
@@ -89,3 +94,35 @@
     [(eq? mode 'follow) (add-components dialog-entity
                                         (every-tick (move))
                                         (follow target))]))
+
+(define (update-dialog new-dialog)
+  (lambda (g e)
+    (define updated-npc
+      ((do-many (point-to "player")
+                (set-speed 0)
+                (stop-animation))
+       g (update-entity (create-npc #:sprite      (get-component e animated-sprite?)
+                                    #:name        (get-name e)
+                                    #:position    (get-component e posn?)
+                                    #:active-tile 0
+                                    #:dialog      new-dialog
+                                    #:mode        'wander)
+                        active-on-bg? (get-component e active-on-bg?))))
+    ((spawn updated-npc #:relative? #f) g e)))
+
+(define (quest #:rule                   quest-rule?
+               #:quest-complete-dialog  complete-dialog
+               #:new-response-dialog    [response-dialog #f])
+  (if response-dialog
+      (list (on-key "x" #:rule quest-rule?
+                              (do-many (point-to "player")
+                                       (set-speed 0)
+                                       (stop-animation)
+                                       (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
+                                       (update-dialog response-dialog)
+                                       (do-after-time 1 die))))
+      (list (on-key "x" #:rule quest-rule?
+                    (do-many (point-to "player")
+                             (set-speed 0)
+                             (stop-animation)
+                             (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND))))))
