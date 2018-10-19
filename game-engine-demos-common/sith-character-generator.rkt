@@ -1,6 +1,8 @@
 #lang racket
 ; Resources: http://untamed.wild-refuge.net/rmxpresources.php?characters
 
+(require 2htdp/image)
+
 (provide sith-character)
 
 (require racket/runtime-path)
