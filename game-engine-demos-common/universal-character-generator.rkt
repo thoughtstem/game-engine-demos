@@ -7,8 +7,10 @@
          show-hue-options
          hue)
 
-(require 2htdp/image)
-(require racket/runtime-path)
+(require 2htdp/image
+         game-engine
+         racket/runtime-path)
+
 (define-runtime-path package-path "assets")
 
 ; generate random basic character: body + eyes + top + bottom + shoes
