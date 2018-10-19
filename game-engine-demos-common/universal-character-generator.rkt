@@ -8,7 +8,6 @@
          hue)
 
 (require 2htdp/image)
-(require game-engine)
 (require racket/runtime-path)
 (define-runtime-path package-path "assets")
 
