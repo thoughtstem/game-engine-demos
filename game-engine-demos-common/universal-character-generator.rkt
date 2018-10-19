@@ -4,7 +4,8 @@
 (provide create-random-character
          create-custom-character
          show-character-options
-         show-hue-options)
+         show-hue-options
+         hue)
 
 (require 2htdp/image)
 (require game-engine)
