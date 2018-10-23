@@ -2,10 +2,12 @@
 
 (provide create-npc
          update-dialog
-         quest)
+         quest
+         random-npc)
 ;(provide sheet->rainbow-tint-sheet)
 
-(require "./assets/sound-samples.rkt")
+(require "./assets/sound-samples.rkt"
+         "./sith-character-generator.rkt")
 (require game-engine)
 
 (define (last-dialog-and-near? name)
@@ -95,6 +97,35 @@
                                         (every-tick (move))
                                         (follow target))]))
 
+
+
+; ====== RANDOM NPC ENTITY CREATOR =====
+(define (random-npc [p (posn 0 0)]
+                    #:name [name (first (shuffle (list "Jordan" "Adrian" "Alex" "Riley"
+                                                       "Sydney" "Charlie" "Andy")))]
+                    #:tile [tile 0]
+                    #:mode [mode 'still]
+                    #:game-width [GAME-WIDTH 480]
+                    #:components [c #f] . custom-components )
+  (create-npc #:sprite (sheet->sprite (sith-character)
+                                 #:rows       4
+                                 #:columns    4
+                                 #:row-number 3
+                                 #:speed      3)
+              #:name        name
+              #:position    p
+              #:active-tile tile
+              #:dialog      (dialog->sprites (first (shuffle (list (list "Hello.")
+                                                                   (list "Hi!")
+                                                                   (list "Sorry, I don't have time to talk now")
+                                                                   (list "The weather is nice today"))))
+                                             #:game-width GAME-WIDTH
+                                             #:animated #t
+                                             #:speed 4)
+              #:mode        mode
+              #:components  (cons c custom-components)))
+
+ 
 (define (update-dialog new-dialog)
   (lambda (g e)
     (define updated-npc
