@@ -109,11 +109,15 @@
 
 ; ====== RANDOM NPC ENTITY CREATOR =====
 (define (random-npc [p (posn 0 0)]
-                    #:name [name (first (shuffle (list "Adrian" "Alex" "Riley"
-                                                       "Sydney" "Charlie" "Andy")))]
-                    #:tile [tile 0]
-                    #:mode [mode 'still]
+                    #:name       [name (first (shuffle (list "Adrian" "Alex" "Riley"
+                                                             "Sydney" "Charlie" "Andy")))]
+                    #:tile       [tile 0]
+                    #:mode       [mode 'still]
                     #:game-width [GAME-WIDTH 480]
+                    #:speed      [spd 2]
+                    #:target     [target "player"]
+                    #:sound      [sound #t]
+                    #:scale      [scale 1]
                     #:components [c #f] . custom-components )
   (create-npc #:sprite (sheet->sprite (sith-character)
                                  #:rows       4
@@ -131,6 +135,10 @@
                                              #:animated #t
                                              #:speed 4)
               #:mode        mode
+              #:speed       spd
+              #:target      target
+              #:sound       sound
+              #:scale       scale
               #:components  (cons c custom-components)))
 
  
