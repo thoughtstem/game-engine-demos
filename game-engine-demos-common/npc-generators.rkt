@@ -53,11 +53,6 @@
                                                    (counter 0)
                                                    (stop-on-edge)
                                                    (on-start (scale-sprite scale))
-                                                   (on-key 'enter
-                                                           #:rule (last-dialog-and-near? "player")  ;(npc-spoke-and-near? "player")
-                                                           (do-many ;(set-counter 0)
-                                                                    (set-speed spd)
-                                                                    (start-animation)))
                                                    (cons c cs)))
   (define base-with-sound-entity
     (if sound
@@ -83,25 +78,38 @@
                                          (next-response dialog #:sound SHORT-BLIP-SOUND)
                                          (play-sound OPEN-DIALOG-SOUND))))))
   (cond
-    [(eq? mode 'still)  dialog-entity]
+    [(eq? mode 'still)  (add-components dialog-entity
+                                        (on-start (stop-animation)))]
     [(eq? mode 'wander) (add-components dialog-entity
                                         (every-tick (move))
+                                        (on-key 'enter
+                                                #:rule (last-dialog-and-near? "player")
+                                                (do-many (set-speed spd)
+                                                         (start-animation)))
                                         (do-every 50 (random-direction 0 360))
                                         (on-edge 'left   (set-direction 0))
                                         (on-edge 'right  (set-direction 180))
                                         (on-edge 'top    (set-direction 90))
                                         (on-edge 'bottom (set-direction 270)))]
     [(eq? mode 'pace)   (add-components dialog-entity
-                                        (every-tick (move-left-right #:min move-min  #:max move-max)))]
+                                        (every-tick (move-left-right #:min move-min  #:max move-max))
+                                        (on-key 'enter
+                                                #:rule (last-dialog-and-near? "player")
+                                                (do-many (set-speed spd)
+                                                         (start-animation))))]
     [(eq? mode 'follow) (add-components dialog-entity
                                         (every-tick (move))
+                                        (on-key 'enter
+                                                #:rule (last-dialog-and-near? "player")
+                                                (do-many (set-speed spd)
+                                                         (start-animation)))
                                         (follow target))]))
 
 
 
 ; ====== RANDOM NPC ENTITY CREATOR =====
 (define (random-npc [p (posn 0 0)]
-                    #:name [name (first (shuffle (list "Jordan" "Adrian" "Alex" "Riley"
+                    #:name [name (first (shuffle (list "Adrian" "Alex" "Riley"
                                                        "Sydney" "Charlie" "Andy")))]
                     #:tile [tile 0]
                     #:mode [mode 'still]
@@ -116,9 +124,9 @@
               #:position    p
               #:active-tile tile
               #:dialog      (dialog->sprites (first (shuffle (list (list "Hello.")
-                                                                   (list "Hi!")
-                                                                   (list "Sorry, I don't have time to talk now")
-                                                                   (list "The weather is nice today"))))
+                                                                   (list "Hi! Nice to meet you!")
+                                                                   (list "Sorry, I don't have time to talk now.")
+                                                                   (list "The weather is nice today."))))
                                              #:game-width GAME-WIDTH
                                              #:animated #t
                                              #:speed 4)
