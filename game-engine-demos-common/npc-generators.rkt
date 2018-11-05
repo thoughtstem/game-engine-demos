@@ -3,6 +3,7 @@
 (provide create-npc
          update-dialog
          quest
+         quest-reward
          random-npc)
 ;(provide sheet->rainbow-tint-sheet)
 
@@ -173,3 +174,27 @@
                              (set-speed 0)
                              (stop-animation)
                              (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND))))))
+
+(define (quest-complete? #:quest-giver npc-name
+                         #:quest-item item-name)
+  (lambda (g e)
+    (define npc (get-entity npc-name g))
+    (define quest-item (get-entity item-name g))
+    (define npc-dialog (get-entity "npc dialog" g))
+    (and quest-item
+         npc
+         npc-dialog
+         ((near? "player") g npc))))
+
+(define (remove-on-key g e)
+  (remove-component e on-key?))
+
+(define (quest-reward #:quest-giver npc-name
+                      #:quest-item item-name
+                      #:reward amount)
+  (on-key "enter"
+          #:rule (quest-complete? #:quest-giver npc-name
+                                  #:quest-item item-name)
+          (do-many remove-on-key
+                   (change-counter-by 200)
+                   (draw-counter "Gold: " 24 "yellow"))))
