@@ -1,8 +1,16 @@
 #lang racket
 
-(provide game-over-screen)
+(provide game-over-screen
+         player-dead?
+         show)
 
 (require game-engine)
+
+(define player-dead?
+  (handler g e (not (get-entity "player" g))))
+
+(define show
+  (handler g e (remove-component e hidden?)))
 
 (define (end-screen w h msg color)
   (new-sprite (list (overlay (text msg 30 color)
