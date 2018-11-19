@@ -13,14 +13,14 @@
 
 (define (last-dialog-and-near? name)
   (lambda (g e)
-    (and ((near-entity? name) g e)
+    (and ((near? name) g e)
          (get-entity "npc dialog" g)
          (last-dialog? g e)
          )))
 
 (define (not-last-dialog-and-near? name)
   (lambda (g e)
-    (and ((near-entity? name) g e)
+    (and ((near? name) g e)
          (get-entity "npc dialog" g)
          (not-last-dialog? g e)
          )))
