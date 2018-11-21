@@ -32,7 +32,7 @@
                   #:position    p
                   #:name        "enemy"
                   #:components  (every-tick (spin #:speed 4))
-                                (spawner (thunk* (bullet)) 20)))
+                                (do-every 40 (spawn bullet))))
 
 (define (bullet2)
   (sprite->entity (new-sprite (list (circle 2 "solid" "red")
@@ -53,7 +53,7 @@
                   #:components (every-tick (move-random #:speed 4))
                                (after-time 75     die)  
                                (on-collide "ship" die)
-                               (spawner (thunk* (bullet2)) 30)))
+                               (do-every 30 (spawn (thunk* (bullet2))))))
 
 (define (lost? g e)
   (not (get-entity "ship" g)))

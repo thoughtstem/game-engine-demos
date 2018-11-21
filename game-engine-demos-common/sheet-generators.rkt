@@ -1,7 +1,8 @@
 #lang racket
 
 (provide sheet->rainbow-hue-sheet)
-(provide sheet->rainbow-tint-sheet)
+(provide sheet->rainbow-tint-sheet
+         rainbow-sprite)
 
 (require game-engine)
 
@@ -33,3 +34,12 @@
          (tint-img (hsb->color (make-color-hsb 330)) sprite-sheet)
          (tint-img (hsb->color (make-color-hsb 360)) sprite-sheet)
          ))
+
+
+(define (rainbow-sprite i)
+  (sheet->sprite (sheet->rainbow-tint-sheet i)
+                 #:rows 12
+                 #:columns 1
+                 #:row-number (add1 (random 12))
+                 #:delay 1))
+

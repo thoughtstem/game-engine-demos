@@ -35,7 +35,7 @@
                   #:components  (every-tick (move-up-and-down #:min   0
                                                               #:max   HEIGHT
                                                               #:speed 10))
-                                (spawner bullet 50)))
+                                (do-every 50 (spawn bullet))))
 
 (define bullet
   (sprite->entity (new-sprite (list (circle 5 "solid" "red")

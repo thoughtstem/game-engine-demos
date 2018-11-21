@@ -1,21 +1,26 @@
 #lang racket
 
-(provide create-npc)
+(provide create-npc
+         update-dialog
+         quest
+         quest-reward
+         random-npc)
 ;(provide sheet->rainbow-tint-sheet)
 
-(require "./assets/sound-samples.rkt")
+(require "./assets/sound-samples.rkt"
+         "./sith-character-generator.rkt")
 (require game-engine)
 
 (define (last-dialog-and-near? name)
   (lambda (g e)
-    (and ((near-entity? name) g e)
+    (and ((near? name) g e)
          (get-entity "npc dialog" g)
          (last-dialog? g e)
          )))
 
 (define (not-last-dialog-and-near? name)
   (lambda (g e)
-    (and ((near-entity? name) g e)
+    (and ((near? name) g e)
          (get-entity "npc dialog" g)
          (not-last-dialog? g e)
          )))
@@ -30,7 +35,9 @@
                     #:speed       [spd 2]
                     #:target      [target "player"]
                     #:sound       [sound #t]
-                    #:scale       [scale 1])
+                    #:scale       [scale 1]
+                    #:components  [c #f]
+                    . cs)
   (define simple-dialog? (animated-sprite? (first dialog)))
   (define move-min (- (posn-x position) 50))
   (define move-max (+ (posn-x position) 50))
@@ -47,11 +54,7 @@
                                                    (counter 0)
                                                    (stop-on-edge)
                                                    (on-start (scale-sprite scale))
-                                                   (on-key 'enter
-                                                           #:rule (last-dialog-and-near? "player")  ;(npc-spoke-and-near? "player")
-                                                           (do-many ;(set-counter 0)
-                                                                    (set-speed spd)
-                                                                    (start-animation)))))
+                                                   (cons c cs)))
   (define base-with-sound-entity
     (if sound
         (add-component base-entity (sound-stream))
@@ -76,16 +79,122 @@
                                          (next-response dialog #:sound SHORT-BLIP-SOUND)
                                          (play-sound OPEN-DIALOG-SOUND))))))
   (cond
-    [(eq? mode 'still)  dialog-entity]
+    [(eq? mode 'still)  (add-components dialog-entity
+                                        (on-start (stop-animation)))]
     [(eq? mode 'wander) (add-components dialog-entity
                                         (every-tick (move))
+                                        (on-key 'enter
+                                                #:rule (last-dialog-and-near? "player")
+                                                (do-many (set-speed spd)
+                                                         (start-animation)))
                                         (do-every 50 (random-direction 0 360))
                                         (on-edge 'left   (set-direction 0))
                                         (on-edge 'right  (set-direction 180))
                                         (on-edge 'top    (set-direction 90))
                                         (on-edge 'bottom (set-direction 270)))]
     [(eq? mode 'pace)   (add-components dialog-entity
-                                        (every-tick (move-left-right #:min move-min  #:max move-max)))]
+                                        (every-tick (move-left-right #:min move-min  #:max move-max))
+                                        (on-key 'enter
+                                                #:rule (last-dialog-and-near? "player")
+                                                (do-many (set-speed spd)
+                                                         (start-animation))))]
     [(eq? mode 'follow) (add-components dialog-entity
                                         (every-tick (move))
+                                        (on-key 'enter
+                                                #:rule (last-dialog-and-near? "player")
+                                                (do-many (set-speed spd)
+                                                         (start-animation)))
                                         (follow target))]))
+
+
+
+; ====== RANDOM NPC ENTITY CREATOR =====
+(define (random-npc [p (posn 0 0)]
+                    #:name       [name (first (shuffle (list "Adrian" "Alex" "Riley"
+                                                             "Sydney" "Charlie" "Andy")))]
+                    #:tile       [tile 0]
+                    #:mode       [mode 'still]
+                    #:game-width [GAME-WIDTH 480]
+                    #:speed      [spd 2]
+                    #:target     [target "player"]
+                    #:sound      [sound #t]
+                    #:scale      [scale 1]
+                    #:components [c #f] . custom-components )
+  (create-npc #:sprite (sheet->sprite (sith-character)
+                                 #:rows       4
+                                 #:columns    4
+                                 #:row-number 3
+                                 #:speed      3)
+              #:name        name
+              #:position    p
+              #:active-tile tile
+              #:dialog      (dialog->sprites (first (shuffle (list (list "Hello.")
+                                                                   (list "Hi! Nice to meet you!")
+                                                                   (list "Sorry, I don't have time to talk now.")
+                                                                   (list "The weather is nice today."))))
+                                             #:game-width GAME-WIDTH
+                                             #:animated #t
+                                             #:speed 4)
+              #:mode        mode
+              #:speed       spd
+              #:target      target
+              #:sound       sound
+              #:scale       scale
+              #:components  (cons c custom-components)))
+
+ 
+(define (update-dialog new-dialog)
+  (lambda (g e)
+    (define updated-npc
+      ((do-many (point-to "player")
+                (set-speed 0)
+                (stop-animation))
+       g (update-entity (create-npc #:sprite      (get-component e animated-sprite?)
+                                    #:name        (get-name e)
+                                    #:position    (get-component e posn?)
+                                    #:active-tile 0
+                                    #:dialog      new-dialog
+                                    #:mode        'wander)
+                        active-on-bg? (get-component e active-on-bg?))))
+    ((spawn updated-npc #:relative? #f) g e)))
+
+(define (quest #:rule                   quest-rule?
+               #:quest-complete-dialog  complete-dialog
+               #:new-response-dialog    [response-dialog #f])
+  (if response-dialog
+      (list (on-key "x" #:rule quest-rule?
+                              (do-many (point-to "player")
+                                       (set-speed 0)
+                                       (stop-animation)
+                                       (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
+                                       (update-dialog response-dialog)
+                                       (do-after-time 1 die))))
+      (list (on-key "x" #:rule quest-rule?
+                    (do-many (point-to "player")
+                             (set-speed 0)
+                             (stop-animation)
+                             (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND))))))
+
+(define (quest-complete? #:quest-giver npc-name
+                         #:quest-item item-name)
+  (lambda (g e)
+    (define npc (get-entity npc-name g))
+    (define quest-item (get-entity item-name g))
+    (define npc-dialog (get-entity "npc dialog" g))
+    (and quest-item
+         npc
+         npc-dialog
+         ((near? "player") g npc))))
+
+(define (remove-on-key g e)
+  (remove-component e on-key?))
+
+(define (quest-reward #:quest-giver npc-name
+                      #:quest-item item-name
+                      #:reward amount)
+  (on-key "enter"
+          #:rule (quest-complete? #:quest-giver npc-name
+                                  #:quest-item item-name)
+          (do-many remove-on-key
+                   (change-counter-by 200)
+                   (draw-counter "Gold: " 24 "yellow"))))

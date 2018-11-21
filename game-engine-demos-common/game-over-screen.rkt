@@ -1,15 +1,21 @@
 #lang racket
 
-(provide game-over-screen)
+(provide game-over-screen
+         player-dead?)
 
 (require game-engine)
 
+(define player-dead?
+  (handler g e (not (get-entity "player" g))))
+
+
 (define (end-screen w h msg color)
-  (new-sprite (list (overlay (text msg 30 color)
+  (new-sprite (list (overlay #;(text msg 30 color)
+                             (tint-img color (draw-title msg))
                              (rectangle w h "solid" (make-color 0 0 0 100))))
               1))
 
-(define lose-screen (lambda (w h) (end-screen w h "GAME OVER!" "yellow")))
+(define lose-screen (lambda (w h) (end-screen w h "GAME OVER!" "red")))
 (define win-screen  (lambda (w h) (end-screen w h "YOU WIN!" "green")))
 
 (define (game-over-screen won? lost?)
