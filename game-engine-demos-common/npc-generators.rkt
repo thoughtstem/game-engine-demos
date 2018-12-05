@@ -31,6 +31,7 @@
                     #:position    position
                     #:active-tile tile
                     #:dialog      dialog
+                    #:game-width  [GAME-WIDTH 480]
                     #:mode        [mode 'still]
                     #:speed       [spd 2]
                     #:target      [target "player"]
@@ -41,20 +42,22 @@
   (define simple-dialog? (animated-sprite? (first dialog)))
   (define move-min (- (posn-x position) 50))
   (define move-max (+ (posn-x position) 50))
-  (define base-entity (sprite->entity sprite
-                                      #:name       name
-                                      #:position   position
-                                      #:components (static)
-                                                   (physical-collider)
-                                                   (active-on-bg tile)
-                                                   ;(sound-stream)
-                                                   (speed spd)
-                                                   (direction 0)
-                                                   (rotation-style 'left-right)
-                                                   (counter 0)
-                                                   (stop-on-edge)
-                                                   (on-start (scale-sprite scale))
-                                                   (cons c cs)))
+  (define min-entity (sprite->entity sprite
+                                     #:name     name
+                                     #:position position))
+  (define base-entity (add-components min-entity
+                                      (precompiler dialog
+                                                   (draw-dialog-lg name (draw-avatar-box min-entity) GAME-WIDTH))
+                                      (static)
+                                      (physical-collider)
+                                      (active-on-bg tile)
+                                      (speed spd)
+                                      (direction 0)
+                                      (rotation-style 'left-right)
+                                      (counter 0)
+                                      (stop-on-edge)
+                                      (on-start (scale-sprite scale))
+                                      (cons c cs)))
   (define base-with-sound-entity
     (if sound
         (add-component base-entity (sound-stream))
@@ -120,6 +123,14 @@
                     #:sound      [sound #t]
                     #:scale      [scale 1]
                     #:components [c #f] . custom-components )
+  (define random-dialog
+    (dialog->sprites (first (shuffle (list (list "Hello.")
+                                           (list "Hi! Nice to meet you!")
+                                           (list "Sorry, I don't have time to talk now.")
+                                           (list "The weather is nice today."))))
+                     #:game-width GAME-WIDTH
+                     #:animated #t
+                     #:speed 4))
   (create-npc #:sprite (sheet->sprite (sith-character)
                                  #:rows       4
                                  #:columns    4
@@ -128,13 +139,7 @@
               #:name        name
               #:position    p
               #:active-tile tile
-              #:dialog      (dialog->sprites (first (shuffle (list (list "Hello.")
-                                                                   (list "Hi! Nice to meet you!")
-                                                                   (list "Sorry, I don't have time to talk now.")
-                                                                   (list "The weather is nice today."))))
-                                             #:game-width GAME-WIDTH
-                                             #:animated #t
-                                             #:speed 4)
+              #:dialog      random-dialog
               #:mode        mode
               #:speed       spd
               #:target      target
