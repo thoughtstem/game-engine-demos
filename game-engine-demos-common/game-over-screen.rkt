@@ -18,13 +18,17 @@
 (define lose-screen (lambda (w h) (end-screen w h "GAME OVER!" "red")))
 (define win-screen  (lambda (w h) (end-screen w h "YOU WIN!" "green")))
 
+(define (precompile-game-over g e)
+  (add-components e (precompiler (lose-screen (game-width g) (game-height g))
+                                (win-screen (game-width g) (game-height g)))))
+
 (define (game-over-screen won? lost?)
   (sprite->entity (square 1 "solid" (make-color 0 0 0 0))
                   #:position   (posn 0 0)
                   #:name       "Game Over Screen"
-                  #:components (static)
-                               (hidden)
+                  #:components (hidden)
                                (layer "ui")
+                               (on-start precompile-game-over)
                                (every-tick (maybe-end won? lost?))))
 
 (define (maybe-end won? lost?)
