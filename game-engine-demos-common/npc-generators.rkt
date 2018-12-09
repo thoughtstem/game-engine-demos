@@ -24,6 +24,7 @@
          (get-entity "npc dialog" g)
          (not-last-dialog? g e)
          )))
+
   
 ; ==== NPC CREATOR ====
 (define (create-npc #:sprite sprite
@@ -63,6 +64,7 @@
   (define dialog-entity
     (if simple-dialog?
         (add-components base-with-sound-entity
+                        (storage "dialog" dialog)
                         (on-key 'space #:rule (ready-to-speak-and-near? "player")
                                 (do-many (point-to "player")
                                          ;(set-counter 0)
@@ -70,6 +72,7 @@
                                          (stop-animation)
                                          (next-dialog dialog #:sound SHORT-BLIP-SOUND))))
         (add-components base-with-sound-entity
+                        (storage "dialog" dialog)
                         (on-rule (player-spoke-and-near? "player") (do-many (set-speed 0)
                                                                             (stop-animation)
                                                                             (point-to "player")))

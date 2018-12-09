@@ -10,9 +10,7 @@
 
 
 (define (end-screen w h msg color)
-  (new-sprite (list (overlay #;(text msg 30 color)
-                             (tint-img color (draw-title msg))
-                             (rectangle w h "solid" (make-color 0 0 0 100))))
+  (new-sprite (list (tint-img color (draw-title msg)))
               1))
 
 (define lose-screen (lambda (w h) (end-screen w h "GAME OVER!" "red")))

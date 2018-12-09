@@ -4,7 +4,7 @@
 
 (provide instructions)
 
-
+;Speed this up???
 (define (screen w h msg color)
   (new-sprite (list (overlay (text msg 30 color)
                              (rectangle w h "solid" (make-color 0 0 0 100))))
@@ -16,5 +16,4 @@
                                      (/ h 2))
                   #:name       "ui"
                   #:components (static)
-                               (after-time 50 die)
-                  ))
+                               (after-time 50 die)))
