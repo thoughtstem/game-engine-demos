@@ -87,17 +87,7 @@
   (cond
     [(eq? mode 'still)  (add-components dialog-entity
                                         (on-start (stop-animation)))]
-    [(eq? mode 'wander) (add-components dialog-entity
-                                        (every-tick (move))
-                                        (on-key 'enter
-                                                #:rule (last-dialog-and-near? "player")
-                                                (do-many (set-speed spd)
-                                                         (start-animation)))
-                                        (do-every 50 (random-direction 0 360))
-                                        (on-edge 'left   (set-direction 0))
-                                        (on-edge 'right  (set-direction 180))
-                                        (on-edge 'top    (set-direction 90))
-                                        (on-edge 'bottom (set-direction 270)))]
+    [(eq? mode 'wander) (add-components dialog-entity (wander-mode-components spd))]
     [(eq? mode 'pace)   (add-components dialog-entity
                                         (every-tick (move-left-right #:min move-min  #:max move-max))
                                         (on-key 'enter
@@ -105,13 +95,29 @@
                                                 (do-many (set-speed spd)
                                                          (start-animation))))]
     [(eq? mode 'follow) (add-components dialog-entity
-                                        (every-tick (move))
-                                        (on-key 'enter
-                                                #:rule (last-dialog-and-near? "player")
-                                                (do-many (set-speed spd)
-                                                         (start-animation)))
-                                        (follow target))]))
+                                        (follow-mode-components target spd))]
+    [else dialog-entity]))
 
+(define (wander-mode-components spd)
+  (list 
+   (every-tick (move))
+   (on-key 'enter
+           #:rule (last-dialog-and-near? "player")
+           (do-many (set-speed spd)
+                    (start-animation)))
+   (do-every 50 (random-direction 0 360))
+   (on-edge 'left   (set-direction 0))
+   (on-edge 'right  (set-direction 180))
+   (on-edge 'top    (set-direction 90))
+   (on-edge 'bottom (set-direction 270))))
+
+(define (follow-mode-components target spd)
+  (list (every-tick (move))
+        (on-key 'enter
+                #:rule (last-dialog-and-near? "player")
+                (do-many (set-speed spd)
+                         (start-animation)))
+        (follow target)))
 
 
 ; ====== RANDOM NPC ENTITY CREATOR =====
