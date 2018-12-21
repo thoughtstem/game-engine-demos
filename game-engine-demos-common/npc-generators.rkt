@@ -4,7 +4,8 @@
          update-dialog
          quest
          quest-reward
-         random-npc)
+         random-npc
+         random-character-row)
 ;(provide sheet->rainbow-tint-sheet)
 
 (require "./assets/sound-samples.rkt"
@@ -25,6 +26,15 @@
          (not-last-dialog? g e)
          )))
 
+
+(define (random-character-row)
+  (apply beside
+         (map fast-image-data
+              (vector->list
+               (animated-sprite-frames
+                (get-component
+                 (random-npc)
+                 animated-sprite?))))))
   
 ; ==== NPC CREATOR ====
 (define (create-npc #:sprite sprite
