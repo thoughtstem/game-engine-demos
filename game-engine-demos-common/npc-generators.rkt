@@ -5,7 +5,9 @@
          quest
          quest-reward
          random-npc
-         random-character-row)
+         random-character-row
+         (rename-out (random-character-row random-npc-row))
+         random-character-sprite)
 ;(provide sheet->rainbow-tint-sheet)
 
 (require "./assets/sound-samples.rkt"
@@ -35,6 +37,13 @@
                 (get-component
                  (random-npc)
                  animated-sprite?))))))
+
+(define (random-character-sprite #:delay [d 4])
+  (sheet->sprite (sith-character)
+                 #:rows 4
+                 #:columns 4
+                 #:row-number 3
+                 #:delay d))
   
 ; ==== NPC CREATOR ====
 (define (create-npc #:sprite sprite
