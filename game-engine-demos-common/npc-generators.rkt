@@ -66,8 +66,13 @@
                                      #:name     name
                                      #:position position))
   (define base-entity (add-components min-entity
-                                      (precompiler dialog
-                                                   (draw-dialog-lg name (draw-avatar-box min-entity) GAME-WIDTH))
+                                      (precompiler ;dialog
+                                                   ;(fast-dialog-lg name (draw-avatar-box min-entity) GAME-WIDTH)
+                                       (square 1 'solid 'black)
+                                       (square 1 'solid 'white)
+                                       (square 1 'solid 'dimgray)
+                                       (draw-avatar-box min-entity)
+                                                   )
                                       (static)
                                       (physical-collider)
                                       (active-on-bg tile)
@@ -158,7 +163,7 @@
                                            (list "The weather is nice today."))))
                      #:game-width GAME-WIDTH
                      #:animated #t
-                     #:speed 4))
+                     #:speed 1))
   (create-npc #:sprite (sheet->sprite (sith-character)
                                  #:rows       4
                                  #:columns    4
