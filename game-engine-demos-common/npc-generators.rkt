@@ -4,7 +4,10 @@
          update-dialog
          quest
          quest-reward
-         random-npc)
+         random-npc
+         random-character-row
+         (rename-out (random-character-row random-npc-row))
+         random-character-sprite)
 ;(provide sheet->rainbow-tint-sheet)
 
 (require "./assets/sound-samples.rkt"
@@ -24,6 +27,23 @@
          (get-entity "npc dialog" g)
          (not-last-dialog? g e)
          )))
+
+
+(define (random-character-row)
+  (apply beside
+         (map fast-image-data
+              (vector->list
+               (animated-sprite-frames
+                (get-component
+                 (random-npc)
+                 animated-sprite?))))))
+
+(define (random-character-sprite #:delay [d 4])
+  (sheet->sprite (sith-character)
+                 #:rows 4
+                 #:columns 4
+                 #:row-number 3
+                 #:delay d))
   
 ; ==== NPC CREATOR ====
 (define (create-npc #:sprite sprite
@@ -31,6 +51,7 @@
                     #:position    position
                     #:active-tile tile
                     #:dialog      dialog
+                    #:game-width  [GAME-WIDTH 480]
                     #:mode        [mode 'still]
                     #:speed       [spd 2]
                     #:target      [target "player"]
@@ -41,20 +62,27 @@
   (define simple-dialog? (animated-sprite? (first dialog)))
   (define move-min (- (posn-x position) 50))
   (define move-max (+ (posn-x position) 50))
-  (define base-entity (sprite->entity sprite
-                                      #:name       name
-                                      #:position   position
-                                      #:components (static)
-                                                   (physical-collider)
-                                                   (active-on-bg tile)
-                                                   ;(sound-stream)
-                                                   (speed spd)
-                                                   (direction 0)
-                                                   (rotation-style 'left-right)
-                                                   (counter 0)
-                                                   (stop-on-edge)
-                                                   (on-start (scale-sprite scale))
-                                                   (cons c cs)))
+  (define min-entity (sprite->entity sprite
+                                     #:name     name
+                                     #:position position))
+  (define base-entity (add-components min-entity
+                                      (precompiler ;dialog
+                                                   ;(fast-dialog-lg name (draw-avatar-box min-entity) GAME-WIDTH)
+                                       (square 1 'solid 'black)
+                                       (square 1 'solid 'white)
+                                       (square 1 'solid 'dimgray)
+                                       (draw-avatar-box min-entity)
+                                                   )
+                                      (static)
+                                      (physical-collider)
+                                      (active-on-bg tile)
+                                      (speed spd)
+                                      (direction 0)
+                                      (rotation-style 'left-right)
+                                      (counter 0)
+                                      (stop-on-edge)
+                                      (on-start (scale-sprite scale))
+                                      (cons c cs)))
   (define base-with-sound-entity
     (if sound
         (add-component base-entity (sound-stream))
@@ -63,6 +91,7 @@
   (define dialog-entity
     (if simple-dialog?
         (add-components base-with-sound-entity
+                        (storage "dialog" dialog)
                         (on-key 'space #:rule (ready-to-speak-and-near? "player")
                                 (do-many (point-to "player")
                                          ;(set-counter 0)
@@ -70,6 +99,7 @@
                                          (stop-animation)
                                          (next-dialog dialog #:sound SHORT-BLIP-SOUND))))
         (add-components base-with-sound-entity
+                        (storage "dialog" dialog)
                         (on-rule (player-spoke-and-near? "player") (do-many (set-speed 0)
                                                                             (stop-animation)
                                                                             (point-to "player")))
@@ -81,17 +111,7 @@
   (cond
     [(eq? mode 'still)  (add-components dialog-entity
                                         (on-start (stop-animation)))]
-    [(eq? mode 'wander) (add-components dialog-entity
-                                        (every-tick (move))
-                                        (on-key 'enter
-                                                #:rule (last-dialog-and-near? "player")
-                                                (do-many (set-speed spd)
-                                                         (start-animation)))
-                                        (do-every 50 (random-direction 0 360))
-                                        (on-edge 'left   (set-direction 0))
-                                        (on-edge 'right  (set-direction 180))
-                                        (on-edge 'top    (set-direction 90))
-                                        (on-edge 'bottom (set-direction 270)))]
+    [(eq? mode 'wander) (add-components dialog-entity (wander-mode-components spd))]
     [(eq? mode 'pace)   (add-components dialog-entity
                                         (every-tick (move-left-right #:min move-min  #:max move-max))
                                         (on-key 'enter
@@ -99,13 +119,29 @@
                                                 (do-many (set-speed spd)
                                                          (start-animation))))]
     [(eq? mode 'follow) (add-components dialog-entity
-                                        (every-tick (move))
-                                        (on-key 'enter
-                                                #:rule (last-dialog-and-near? "player")
-                                                (do-many (set-speed spd)
-                                                         (start-animation)))
-                                        (follow target))]))
+                                        (follow-mode-components target spd))]
+    [else dialog-entity]))
 
+(define (wander-mode-components spd)
+  (list 
+   (every-tick (move))
+   (on-key 'enter
+           #:rule (last-dialog-and-near? "player")
+           (do-many (set-speed spd)
+                    (start-animation)))
+   (do-every 50 (random-direction 0 360))
+   (on-edge 'left   (set-direction 0))
+   (on-edge 'right  (set-direction 180))
+   (on-edge 'top    (set-direction 90))
+   (on-edge 'bottom (set-direction 270))))
+
+(define (follow-mode-components target spd)
+  (list (every-tick (move))
+        (on-key 'enter
+                #:rule (last-dialog-and-near? "player")
+                (do-many (set-speed spd)
+                         (start-animation)))
+        (follow target)))
 
 
 ; ====== RANDOM NPC ENTITY CREATOR =====
@@ -120,6 +156,14 @@
                     #:sound      [sound #t]
                     #:scale      [scale 1]
                     #:components [c #f] . custom-components )
+  (define random-dialog
+    (dialog->sprites (first (shuffle (list (list "Hello.")
+                                           (list "Hi! Nice to meet you!")
+                                           (list "Sorry, I don't have time to talk now.")
+                                           (list "The weather is nice today."))))
+                     #:game-width GAME-WIDTH
+                     #:animated #t
+                     #:speed 1))
   (create-npc #:sprite (sheet->sprite (sith-character)
                                  #:rows       4
                                  #:columns    4
@@ -128,13 +172,7 @@
               #:name        name
               #:position    p
               #:active-tile tile
-              #:dialog      (dialog->sprites (first (shuffle (list (list "Hello.")
-                                                                   (list "Hi! Nice to meet you!")
-                                                                   (list "Sorry, I don't have time to talk now.")
-                                                                   (list "The weather is nice today."))))
-                                             #:game-width GAME-WIDTH
-                                             #:animated #t
-                                             #:speed 4)
+              #:dialog      random-dialog
               #:mode        mode
               #:speed       spd
               #:target      target
