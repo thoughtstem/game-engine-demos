@@ -9,7 +9,11 @@
          BLIP-SOUND
          SHORT-BLIP-SOUND
          OPEN-DIALOG-SOUND
-         CLOSE-DIALOG-SOUND)
+         CLOSE-DIALOG-SOUND
+         EXPLOSION-SOUND 
+         BIG-EXPLOSION-SOUND 
+         HIT-SOUND
+         LASER-SOUND)
 
 (require (only-in rsound
                   resample-to-rate
