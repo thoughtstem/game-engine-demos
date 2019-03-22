@@ -28,6 +28,11 @@
 (define-runtime-path open-dialog-path "open_dialog.wav")
 (define-runtime-path close-dialog-path "close_dialog.wav")
 
+(define-runtime-path explosion-path "explosion.wav")
+(define-runtime-path big-explosion-path "big_explosion.wav")
+(define-runtime-path hit-path "hit.wav")
+(define-runtime-path laser-path "laser.wav")
+
 (define DUCK-SOUND #;'() (resample-to-rate 48000 (rs-read duck-path)))
 (define CAT-SOUND  #;'() (resample-to-rate 48000 (rs-read cat-path)))
 (define DOG-SOUND  #;'() (resample-to-rate 48000 (rs-read dog-path)))
@@ -40,3 +45,7 @@
 (define OPEN-DIALOG-SOUND  #;'() (resample-to-rate 48000 (rs-read open-dialog-path)))
 (define CLOSE-DIALOG-SOUND #;'() (resample-to-rate 48000 (rs-read close-dialog-path)))
 
+(define EXPLOSION-SOUND (resample-to-rate 48000 (rs-read explosion-path)))
+(define BIG-EXPLOSION-SOUND (resample-to-rate 48000 (rs-read big-explosion-path)))
+(define HIT-SOUND (resample-to-rate 48000 (rs-read hit-path)))
+(define LASER-SOUND (resample-to-rate 48000 (rs-read laser-path)))
