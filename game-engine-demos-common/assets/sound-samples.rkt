@@ -14,8 +14,7 @@
          HIT-SOUND
          LASER-SOUND)
 
-(require #;
-         (only-in rsound
+(require (only-in rsound
                   resample-to-rate
                   rs-read)
          racket/runtime-path)
