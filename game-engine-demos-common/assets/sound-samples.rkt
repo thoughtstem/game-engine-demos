@@ -10,12 +10,11 @@
          SHORT-BLIP-SOUND
          OPEN-DIALOG-SOUND
          CLOSE-DIALOG-SOUND
-         EXPLOSION-SOUND 
-         BIG-EXPLOSION-SOUND 
+         EXPLOSION-SOUND BIG-EXPLOSION-SOUND 
          HIT-SOUND
          LASER-SOUND)
 
-(require #;(only-in rsound
+(require (only-in rsound
                   resample-to-rate
                   rs-read)
          racket/runtime-path)
@@ -37,19 +36,39 @@
 (define-runtime-path hit-path "hit.wav")
 (define-runtime-path laser-path "laser.wav")
 
-(define DUCK-SOUND '() #;(resample-to-rate 48000 (rs-read duck-path)))
-(define CAT-SOUND  '() #;(resample-to-rate 48000 (rs-read cat-path)))
-(define DOG-SOUND  '() #;(resample-to-rate 48000 (rs-read dog-path)))
-(define HEY-SOUND  '() #;(resample-to-rate 48000 (rs-read hey-path)))
-(define ZOOP-SOUND '() #;(resample-to-rate 48000 (rs-read zoop-path)))
+(define DUCK-SOUND 
+  (resample-to-rate 48000 (rs-read duck-path)))
+(define CAT-SOUND 
+  (resample-to-rate 48000 (rs-read cat-path)))
+(define DOG-SOUND 
+  (resample-to-rate 48000 (rs-read dog-path)))
+(define HEY-SOUND 
+  (resample-to-rate 48000 (rs-read hey-path)))
+(define ZOOP-SOUND   
+  (resample-to-rate 48000 (rs-read zoop-path)))
 
-(define PICKUP-SOUND       '() #;(resample-to-rate 48000 (rs-read pickup-path)))
-(define BLIP-SOUND         '() #;(resample-to-rate 48000 (rs-read blip-path)))
-(define SHORT-BLIP-SOUND   '() #;(resample-to-rate 48000 (rs-read short-blip-path)))
-(define OPEN-DIALOG-SOUND  '() #;(resample-to-rate 48000 (rs-read open-dialog-path)))
-(define CLOSE-DIALOG-SOUND '() #;(resample-to-rate 48000 (rs-read close-dialog-path)))
+(define PICKUP-SOUND  
+  (resample-to-rate 48000 (rs-read pickup-path)))
+(define BLIP-SOUND          
+  (resample-to-rate 48000 (rs-read blip-path)))
+(define SHORT-BLIP-SOUND  
+  (resample-to-rate 48000 (rs-read short-blip-path)))
 
-(define EXPLOSION-SOUND '() #;(resample-to-rate 48000 (rs-read explosion-path)))
-(define BIG-EXPLOSION-SOUND '() #;(resample-to-rate 48000 (rs-read big-explosion-path)))
-(define HIT-SOUND '() #;(resample-to-rate 48000 (rs-read hit-path)))
-(define LASER-SOUND '() #;(resample-to-rate 48000 (rs-read laser-path)))
+(define OPEN-DIALOG-SOUND   
+  (resample-to-rate 48000 (rs-read open-dialog-path)))
+(define CLOSE-DIALOG-SOUND  
+  (resample-to-rate 48000 (rs-read close-dialog-path)))
+
+(define EXPLOSION-SOUND  
+  (resample-to-rate 48000 (rs-read explosion-path)))
+
+(define BIG-EXPLOSION-SOUND  
+  (resample-to-rate 48000 (rs-read big-explosion-path)))
+
+(define HIT-SOUND  
+  (resample-to-rate 48000 (rs-read hit-path)))
+
+(define LASER-SOUND  
+  (resample-to-rate 48000 (rs-read laser-path)))
+
+
