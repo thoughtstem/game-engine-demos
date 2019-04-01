@@ -6,6 +6,5 @@
 
 (define deps '(
   "https://github.com/thoughtstem/game-engine.git"
-  "https://github.com/thoughtstem/game-engine-rpg.git"
-  "rsound"))
+  "https://github.com/thoughtstem/game-engine-rpg.git"))
 

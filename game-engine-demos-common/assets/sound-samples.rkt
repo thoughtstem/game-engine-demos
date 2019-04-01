@@ -34,13 +34,11 @@
          random-slash-sound
          random-woosh-sound
          random-lightsaber-sound
-         random-blaster-sound
-         )
+         random-blaster-sound)
 
-(require (only-in rsound
-                  resample-to-rate
-                  rs-read)
-         racket/runtime-path)
+(require 
+  game-engine/engine/extensions/sound
+  racket/runtime-path)
 
 (define-runtime-path duck-path "duck.wav")
 (define-runtime-path cat-path "meow2.wav")
@@ -83,93 +81,100 @@
 (define-runtime-path blaster4-path "blaster4.wav")
 
 (define DUCK-SOUND 
-  (resample-to-rate 48000 (rs-read duck-path)))
+  (sound duck-path))
+
 (define CAT-SOUND 
-  (resample-to-rate 48000 (rs-read cat-path)))
+  (sound cat-path) )
+
 (define DOG-SOUND 
-  (resample-to-rate 48000 (rs-read dog-path)))
+  (sound dog-path) )
+
 (define HEY-SOUND 
-  (resample-to-rate 48000 (rs-read hey-path)))
+  (sound hey-path) )
+
 (define ZOOP-SOUND   
-  (resample-to-rate 48000 (rs-read zoop-path)))
+  (sound zoop-path) )
 
 (define PICKUP-SOUND  
-  (resample-to-rate 48000 (rs-read pickup-path)))
+  (sound pickup-path) )
+
 (define BLIP-SOUND          
-  (resample-to-rate 48000 (rs-read blip-path)))
+  (sound blip-path) )
+
 (define SHORT-BLIP-SOUND  
-  (resample-to-rate 48000 (rs-read short-blip-path)))
+  (sound short-blip-path) )
 
 (define OPEN-DIALOG-SOUND   
-  (resample-to-rate 48000 (rs-read open-dialog-path)))
+  (sound open-dialog-path) )
+
 (define CLOSE-DIALOG-SOUND  
-  (resample-to-rate 48000 (rs-read close-dialog-path)))
+  (sound close-dialog-path) )
 
 (define EXPLOSION-SOUND  
-  (resample-to-rate 48000 (rs-read explosion-path)))
+  (sound explosion-path) )
 
 (define BIG-EXPLOSION-SOUND  
-  (resample-to-rate 48000 (rs-read big-explosion-path)))
+  (sound big-explosion-path) )
 
 (define HIT-SOUND  
-  (resample-to-rate 48000 (rs-read hit-path)))
+  (sound hit-path) )
 
 (define LASER-SOUND  
-  (resample-to-rate 48000 (rs-read laser-path)))
+  (sound laser-path) )
 
 (define SLASH1-SOUND  
-  (resample-to-rate 48000 (rs-read slash1-path)))
+  (sound slash1-path) )
 
 (define SLASH2-SOUND  
-  (resample-to-rate 48000 (rs-read slash2-path)))
+  (sound slash2-path) )
 
 (define SLASH3-SOUND  
-  (resample-to-rate 48000 (rs-read slash3-path)))
+  (sound slash3-path) )
 
 (define SLASH4-SOUND  
-  (resample-to-rate 48000 (rs-read slash4-path)))
+  (sound slash4-path) )
 
 (define WOOSH1-SOUND  
-  (resample-to-rate 48000 (rs-read woosh1-path)))
+  (sound woosh1-path) )
 
 (define WOOSH2-SOUND  
-  (resample-to-rate 48000 (rs-read woosh2-path)))
+  (sound woosh2-path) )
 
 (define WOOSH3-SOUND  
-  (resample-to-rate 48000 (rs-read woosh3-path)))
+  (sound woosh3-path) )
 
 (define WOOSH4-SOUND  
-  (resample-to-rate 48000 (rs-read woosh4-path)))
+  (sound woosh4-path) )
 
 (define FIRE-MAGIC-SOUND  
-  (resample-to-rate 48000 (rs-read fire-magic-path)))
+  (sound fire-magic-path) )
 
 (define ICE-MAGIC-SOUND  
-  (resample-to-rate 48000 (rs-read ice-magic-path)))
+  (sound ice-magic-path) )
 
 (define LIGHTSABER1-SOUND  
-  (resample-to-rate 48000 (rs-read lightsaber1-path)))
+  (sound lightsaber1-path) )
 
 (define LIGHTSABER2-SOUND  
-  (resample-to-rate 48000 (rs-read lightsaber2-path)))
+  (sound lightsaber2-path) )
 
 (define LIGHTSABER3-SOUND  
-  (resample-to-rate 48000 (rs-read lightsaber3-path)))
+  (sound lightsaber3-path) )
 
 (define LIGHTSABER4-SOUND  
-  (resample-to-rate 48000 (rs-read lightsaber4-path)))
+  (sound lightsaber4-path) )
 
 (define BLASTER1-SOUND  
-  (resample-to-rate 48000 (rs-read blaster1-path)))
+  (sound blaster1-path) )
 
 (define BLASTER2-SOUND  
-  (resample-to-rate 48000 (rs-read blaster2-path)))
+  (sound blaster2-path) )
 
 (define BLASTER3-SOUND  
-  (resample-to-rate 48000 (rs-read blaster3-path)))
+  (sound blaster3-path) )
 
 (define BLASTER4-SOUND  
-  (resample-to-rate 48000 (rs-read blaster4-path)))
+  (sound blaster4-path) )
 
 ; ==== RANDOM SOUND FUNCTIONS ====
 (define (random-slash-sound)
