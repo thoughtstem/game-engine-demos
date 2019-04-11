@@ -23,6 +23,7 @@
          WOOSH4-SOUND
          FIRE-MAGIC-SOUND
          ICE-MAGIC-SOUND
+         BUBBLE-SOUND
          LIGHTSABER1-SOUND
          LIGHTSABER2-SOUND
          LIGHTSABER3-SOUND
@@ -69,6 +70,7 @@
 
 (define-runtime-path fire-magic-path "fire_magic.wav")
 (define-runtime-path ice-magic-path  "ice_magic.wav")
+(define-runtime-path bubble-path  "bubble.wav")
 
 (define-runtime-path lightsaber1-path "lightsaber1.wav")
 (define-runtime-path lightsaber2-path "lightsaber2.wav")
@@ -151,6 +153,9 @@
 
 (define ICE-MAGIC-SOUND  
   (sound ice-magic-path) )
+
+(define BUBBLE-SOUND  
+  (sound bubble-path) )
 
 (define LIGHTSABER1-SOUND  
   (sound lightsaber1-path) )
