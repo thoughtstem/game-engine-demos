@@ -196,9 +196,12 @@
                         active-on-bg? (get-component e active-on-bg?))))
     ((spawn updated-npc #:relative? #f) g e)))
 
+(struct quest-system (name rule complete-dialog response-dialog cutscene))
+
 (define (quest #:rule                   quest-rule?
                #:quest-complete-dialog  complete-dialog
-               #:new-response-dialog    [response-dialog #f])
+               #:new-response-dialog    [response-dialog #f]
+               #:cutscene               [cutscene #f])
   (if response-dialog
       (list (on-key "x" #:rule quest-rule?
                               (do-many (point-to "player")
@@ -230,9 +233,14 @@
 (define (quest-reward #:quest-giver npc-name
                       #:quest-item item-name
                       #:reward amount)
-  (on-key "enter"
-          #:rule (quest-complete? #:quest-giver npc-name
-                                  #:quest-item item-name)
-          (do-many remove-on-key
-                   (change-counter-by 200)
-                   (draw-counter "Gold: " 24 "yellow"))))
+  (define (remove-quest-reward g e)
+      (remove-component e (curry component-eq? (get-storage-data (~a item-name "-quest-reward") e))))
+  (define quest-reward-component
+    (on-key "enter"
+           #:rule (quest-complete? #:quest-giver npc-name
+                                   #:quest-item item-name)
+           (do-many remove-quest-reward
+                    (change-counter-by 200)
+                    )))
+  (list (storage (~a item-name "-quest-reward") quest-reward-component)
+        quest-reward-component))
