@@ -203,18 +203,22 @@
                #:new-response-dialog    [response-dialog #f]
                #:cutscene               [cutscene #f])
   (if response-dialog
-      (list (on-key "x" #:rule quest-rule?
-                              (do-many (point-to "player")
-                                       (set-speed 0)
-                                       (stop-animation)
-                                       (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
-                                       (update-dialog response-dialog)
-                                       (do-after-time 1 die))))
-      (list (on-key "x" #:rule quest-rule?
-                    (do-many (point-to "player")
-                             (set-speed 0)
-                             (stop-animation)
-                             (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND))))))
+      ;(list (on-key "x" #:rule quest-rule?
+      (observe-change quest-rule?
+                      (if/r quest-rule?
+                            (do-many (point-to "player")
+                                     (set-speed 0)
+                                     (stop-animation)
+                                     (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
+                                     (update-dialog response-dialog)
+                                     (do-after-time 1 die))))
+      ;(list (on-key "x" #:rule quest-rule?
+      (observe-change quest-rule?
+                      (if/r quest-rule?
+                            (do-many (point-to "player")
+                                     (set-speed 0)
+                                     (stop-animation)
+                                     (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND))))))
 
 (define (quest-complete? #:quest-giver npc-name
                          #:quest-item item-name)
@@ -227,20 +231,33 @@
          npc-dialog
          ((near? "player") g npc))))
 
+(define (quest-complete-by-id? #:quest-giver npc-name
+                               #:quest-item item)
+  (lambda (g e)
+    (define npc (get-entity npc-name g))
+    (define quest-item-in-game? ((in-game-by-id? (get-storage-data "item-id" item)) g e))
+    (define npc-dialog (get-entity "npc dialog" g))
+    (and quest-item-in-game?
+         npc
+         npc-dialog
+         ((near? "player") g npc)
+         )))
+
 (define (remove-on-key g e)
   (remove-component e on-key?))
 
 (define (quest-reward #:quest-giver npc-name
-                      #:quest-item item-name
+                      #:quest-item item
                       #:reward amount)
+  (define item-id (get-storage-data "item-id" item))
   (define (remove-quest-reward g e)
-      (remove-component e (curry component-eq? (get-storage-data (~a item-name "-quest-reward") e))))
+      (remove-component e (curry component-eq? (get-storage-data (~a "quest-reward-" item-id) e))))
   (define quest-reward-component
     (on-key "enter"
-           #:rule (quest-complete? #:quest-giver npc-name
-                                   #:quest-item item-name)
+           #:rule (quest-complete-by-id? #:quest-giver npc-name
+                                         #:quest-item item)
            (do-many remove-quest-reward
-                    (change-counter-by 200)
+                    (change-counter-by amount)
                     )))
-  (list (storage (~a item-name "-quest-reward") quest-reward-component)
+  (list (storage (~a "quest-reward-" item-id) quest-reward-component)
         quest-reward-component))
