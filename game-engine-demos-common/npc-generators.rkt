@@ -229,7 +229,8 @@
     (and quest-item
          npc
          npc-dialog
-         ((near? "player") g npc))))
+         ;((near? "player") g npc) ;removing since player sometimes gets pushed away
+         )))
 
 (define (quest-complete-by-id? #:quest-giver npc-name
                                #:quest-item item)
@@ -240,7 +241,7 @@
     (and quest-item-in-game?
          npc
          npc-dialog
-         ((near? "player") g npc)
+         ;((near? "player") g npc) ;removing since player sometimes gets pushed away
          )))
 
 (define (remove-on-key g e)
