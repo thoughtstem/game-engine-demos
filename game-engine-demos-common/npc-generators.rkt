@@ -7,7 +7,9 @@
          random-npc
          random-character-row
          (rename-out (random-character-row random-npc-row))
-         random-character-sprite)
+         random-character-sprite
+         entity-in-game?)
+
 ;(provide sheet->rainbow-tint-sheet)
 
 (require "./assets/sound-samples.rkt"
@@ -262,3 +264,7 @@
                     )))
   (list (storage (~a "quest-reward-" item-id) quest-reward-component)
         quest-reward-component))
+
+(define (entity-in-game? name)
+  (lambda (g e)
+    (get-entity name g)))
