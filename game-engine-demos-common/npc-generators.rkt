@@ -4,6 +4,7 @@
          update-dialog
          quest
          quest-reward
+         collect-quest-reward
          random-npc
          random-character-row
          (rename-out (random-character-row random-npc-row))
@@ -212,8 +213,10 @@
                                      (set-speed 0)
                                      (stop-animation)
                                      (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
-                                     (update-dialog response-dialog)
-                                     (do-after-time 1 die))))
+                                     (λ (g e)
+                                       (add-components e (on-key 'enter (do-many (update-dialog response-dialog)
+                                                                                 (do-after-time 1 die)))))
+                                     )))
       ;(list (on-key "x" #:rule quest-rule?
       (observe-change quest-rule?
                       (if/r quest-rule?
@@ -246,6 +249,17 @@
          ;((near? "player") g npc) ;removing since player sometimes gets pushed away
          )))
 
+(define (counter-quest-complete? #:amount amount)
+  (lambda (g e)
+    (define count (get-counter (get-entity "score" g)))
+    (define npc-dialog (get-entity "npc dialog" g))
+    (displayln (~a "count: " count ","
+                   "amount: " amount ","))
+    (and npc-dialog
+         (>= count amount)
+         ;((near? "player") g npc) ;removing since player sometimes gets pushed away
+         )))
+
 (define (remove-on-key g e)
   (remove-component e on-key?))
 
@@ -263,6 +277,20 @@
                     (change-counter-by amount)
                     )))
   (list (storage (~a "quest-reward-" item-id) quest-reward-component)
+        quest-reward-component))
+
+(define (collect-quest-reward #:amount amount
+                              #:reward-item item)
+  (define (remove-quest-reward g e)
+      (remove-component e (curry component-eq? (get-storage-data (~a "collect-quest-reward-" amount) e))))
+  (define quest-reward-component
+    (on-key "enter"
+           #:rule (counter-quest-complete? #:amount amount)
+           (do-many remove-quest-reward
+                    ;(change-counter-by (- amount))
+                    (spawn-on-current-tile item)
+                    )))
+  (list (storage (~a "collect-quest-reward-" amount) quest-reward-component)
         quest-reward-component))
 
 (define (entity-in-game? name)
