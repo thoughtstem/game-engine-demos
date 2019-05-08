@@ -4,7 +4,11 @@
          update-dialog
          quest
          quest-reward
-         collect-quest-reward
+         
+         item-reward-system
+         counter-reward-system
+         hunt-reward-system
+         
          random-npc
          random-character-row
          (rename-out (random-character-row random-npc-row))
@@ -249,20 +253,34 @@
          ;((near? "player") g npc) ;removing since player sometimes gets pushed away
          )))
 
-(define (counter-quest-complete? #:amount amount)
+(define (counter-quest-complete? #:quest-giver-name name
+                                 #:collect-amount collect-amount)
   (lambda (g e)
     (define count (get-counter (get-entity "score" g)))
+    (define npc (get-entity name g))
     (define npc-dialog (get-entity "npc dialog" g))
-    (displayln (~a "count: " count ","
-                   "amount: " amount ","))
-    (and npc-dialog
-         (>= count amount)
+    (and npc
+         npc-dialog
+         (>= count collect-amount)
+         ;((near? "player") g npc) ;removing since player sometimes gets pushed away
+         )))
+
+(define (hunt-quest-complete? #:quest-giver-name name
+                              #:hunt-amount hunt-amount)
+  (lambda (g e)
+    (define hunt-count (get-storage-data "kill-count" (get-entity "score" g)))
+    (define npc (get-entity name g))
+    (define npc-dialog (get-entity "npc dialog" g))
+    (and npc
+         npc-dialog
+         (>= hunt-count hunt-amount)
          ;((near? "player") g npc) ;removing since player sometimes gets pushed away
          )))
 
 (define (remove-on-key g e)
   (remove-component e on-key?))
 
+; this must be placed on the score counter entity
 (define (quest-reward #:quest-giver npc-name
                       #:quest-item item
                       #:reward amount)
@@ -279,19 +297,72 @@
   (list (storage (~a "quest-reward-" item-id) quest-reward-component)
         quest-reward-component))
 
-(define (collect-quest-reward #:amount amount
-                              #:reward-item item)
-  (define (remove-quest-reward g e)
-      (remove-component e (curry component-eq? (get-storage-data (~a "collect-quest-reward-" amount) e))))
-  (define quest-reward-component
+; ===== REFACTOED REWARD SYSTEM =====
+; assume will be attached to quest-giver
+(define (item-reward-system #:rule rule
+                            #:reward-item reward-item)      ;must be a custom-item to have unique id's
+  (define item-id (get-storage-data "item-id" reward-item))
+
+  (define reward-storage-name (~a "item-reward-component-" item-id))
+  
+  (define (remove-item-reward-component g e)
+    (remove-component e (curry component-eq? (get-storage-data reward-storage-name e))))
+  
+  (define item-reward-component
     (on-key "enter"
-           #:rule (counter-quest-complete? #:amount amount)
-           (do-many remove-quest-reward
-                    ;(change-counter-by (- amount))
-                    (spawn-on-current-tile item)
+           #:rule rule
+           (do-many remove-item-reward-component
+                    (if reward-item (spawn-on-current-tile reward-item) (λ (g e) e))
                     )))
-  (list (storage (~a "collect-quest-reward-" amount) quest-reward-component)
-        quest-reward-component))
+  
+  (list (storage reward-storage-name item-reward-component)
+        item-reward-component))
+
+(define (counter-reward-system #:quest-giver-name quest-giver-name
+                               #:collect-amount   collect-amount
+                               #:reward-amount    reward-amount)
+  
+  ;Note: quest giver name must be unique to avoid conflicts.
+  ;todo: change this to an entity with a uniqie pre-game npc-id
+  (define reward-storage-name (~a "counter-reward-component-" quest-giver-name "-" collect-amount))
+  
+  (define (remove-counter-reward-component g e)
+    (~> e
+        (remove-component _ (curry component-eq? (get-storage-data reward-storage-name e)))
+        (remove-storage reward-storage-name _)))
+  
+  (define counter-reward-component
+    (on-key "enter"
+           #:rule (counter-quest-complete? #:quest-giver-name quest-giver-name
+                                           #:collect-amount collect-amount)
+           (do-many remove-counter-reward-component
+                    (change-counter-by (- reward-amount collect-amount)))
+           ))
+  (list (storage reward-storage-name counter-reward-component)
+        counter-reward-component))
+
+(define (hunt-reward-system #:quest-giver-name quest-giver-name
+                            #:hunt-amount      hunt-amount
+                            #:reward-amount    reward-amount)
+  
+  ;Note: quest giver name must be unique to avoid conflicts.
+  ;todo: change this to an entity with a uniqie pre-game npc-id
+  (define reward-storage-name (~a "hunt-reward-component-" quest-giver-name "-" hunt-amount))
+  
+  (define (remove-hunt-reward-component g e)
+    (~> e
+        (remove-component _ (curry component-eq? (get-storage-data reward-storage-name e)))
+        (remove-storage reward-storage-name _)))
+  
+  (define hunt-reward-component
+    (on-key "enter"
+            #:rule (hunt-quest-complete? #:quest-giver-name quest-giver-name
+                                         #:hunt-amount hunt-amount)
+            (do-many remove-hunt-reward-component
+                     (change-counter-by reward-amount))
+            ))
+  (list (storage reward-storage-name hunt-reward-component)
+        hunt-reward-component))
 
 (define (entity-in-game? name)
   (lambda (g e)
