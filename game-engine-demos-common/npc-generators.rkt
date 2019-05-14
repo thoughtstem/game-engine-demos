@@ -97,24 +97,28 @@
   
   (define dialog-entity
     (if simple-dialog?
-        (add-components base-with-sound-entity
-                        (storage "dialog" dialog)
-                        (on-key 'space #:rule (ready-to-speak-and-near? "player")
-                                (do-many (point-to "player")
-                                         ;(set-counter 0)
-                                         (set-speed 0)
-                                         (stop-animation)
-                                         (next-dialog dialog #:sound SHORT-BLIP-SOUND))))
-        (add-components base-with-sound-entity
-                        (storage "dialog" dialog)
-                        (on-rule (player-spoke-and-near? "player") (do-many (set-speed 0)
-                                                                            (stop-animation)
-                                                                            (point-to "player")))
-                        (on-key 'enter
-                                #:rule (player-spoke-and-near? "player")
-                                (do-many ;(set-counter 0)
+        (let ([dialog-component (on-key 'space #:rule (ready-to-speak-and-near? "player")
+                                        (do-many (point-to "player")
+                                                 (set-speed 0)
+                                                 (stop-animation)
+                                                 (next-dialog dialog #:sound SHORT-BLIP-SOUND)))])
+          (add-components base-with-sound-entity
+                          (storage "dialog" dialog)
+                          (storage "dialog-component" dialog-component)
+                          dialog-component))
+        (let ([dialog-component (on-key 'enter
+                                        #:rule (player-spoke-and-near? "player")
+                                        (do-many ;(set-counter 0)
                                          (next-response dialog #:sound SHORT-BLIP-SOUND)
-                                         (play-sound OPEN-DIALOG-SOUND))))))
+                                         (play-sound OPEN-DIALOG-SOUND)))])
+          (add-components base-with-sound-entity
+                          (storage "dialog" dialog)
+                          (storage "dialog-component" dialog-component)
+                          (on-rule (player-spoke-and-near? "player") (do-many (set-speed 0)
+                                                                              (stop-animation)
+                                                                              (point-to "player")))
+                          dialog-component)
+                        )))
   (cond
     [(eq? mode 'still)  (add-components dialog-entity
                                         (on-start (stop-animation)))]
@@ -188,7 +192,7 @@
               #:components  (cons c custom-components)))
 
  
-(define (update-dialog new-dialog)
+#|(define (update-dialog new-dialog)
   (lambda (g e)
     (define updated-npc
       ((do-many (point-to "player")
@@ -201,33 +205,81 @@
                                     #:dialog      new-dialog
                                     #:mode        'wander)
                         active-on-bg? (get-component e active-on-bg?))))
-    ((spawn updated-npc #:relative? #f) g e)))
+    ((spawn updated-npc #:relative? #f) g e)))|#
 
-(struct quest-system (name rule complete-dialog response-dialog cutscene))
+; Less hacky update-dialog that doesn't destroy all other components
+(define (update-dialog new-dialog)
+  (define simple-dialog? (animated-sprite? (first new-dialog)))
+  (lambda (g e)
+    (define entity-with-new-dialog
+      (if simple-dialog?
+          (let ([new-dialog-component (on-key 'space #:rule (ready-to-speak-and-near? "player")
+                                              (do-many (point-to "player")
+                                                       (set-speed 0)
+                                                       (stop-animation)
+                                                       (next-dialog new-dialog #:sound SHORT-BLIP-SOUND)))])
+              (~> e
+                  (update-entity _ counter? (counter 0))
+                  (update-entity _ (curry component-eq? (get-storage-data "dialog-component" e))
+                                    new-dialog-component)
+                  (set-storage "dialog" _ new-dialog)
+                  (set-storage "dialog-component" _ new-dialog-component)))
+          (let ([new-dialog-component (on-key 'enter
+                                              #:rule (player-spoke-and-near? "player")
+                                              (do-many
+                                               (next-response new-dialog #:sound SHORT-BLIP-SOUND)
+                                               (play-sound OPEN-DIALOG-SOUND)))])
+            (~> e
+                (update-entity _ counter? (counter 0))
+                (update-entity _ (curry component-eq? (get-storage-data "dialog-component" e))
+                                 new-dialog-component)
+                (set-storage "dialog" _ new-dialog)
+                (set-storage "dialog-component" _ new-dialog-component)))))
+    entity-with-new-dialog))
+
+(struct quest-system (name rule complete-dialog response-dialog cutscene)) ; NOT USED YET
+
+(define QUEST-ID-COUNTER 0)
+
+(define (next-quest-id)
+  (set! QUEST-ID-COUNTER (add1 QUEST-ID-COUNTER))
+  QUEST-ID-COUNTER)
 
 (define (quest #:rule                   quest-rule?
                #:quest-complete-dialog  complete-dialog
                #:new-response-dialog    [response-dialog #f]
                #:cutscene               [cutscene #f])
-  (if response-dialog
-      ;(list (on-key "x" #:rule quest-rule?
-      (observe-change quest-rule?
-                      (if/r quest-rule?
-                            (do-many (point-to "player")
-                                     (set-speed 0)
-                                     (stop-animation)
-                                     (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
-                                     (λ (g e)
-                                       (add-components e (on-key 'enter (do-many (update-dialog response-dialog)
-                                                                                 (do-after-time 1 die)))))
-                                     )))
-      ;(list (on-key "x" #:rule quest-rule?
-      (observe-change quest-rule?
-                      (if/r quest-rule?
-                            (do-many (point-to "player")
-                                     (set-speed 0)
-                                     (stop-animation)
-                                     (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND))))))
+  (define qid (next-quest-id))
+
+  (define (remove-quest-component)
+    (lambda (g e)
+      (remove-component e (curry component-eq? (get-storage-data (~a "quest-component-" qid) e)))))
+  
+  (define (remove-cutscene-component)
+    (lambda (g e)
+      (remove-component e (curry component-eq? (get-storage-data (~a "cutscene-component-" qid) e)))))
+
+  (define quest-component (observe-change quest-rule?
+                                             (if/r quest-rule?
+                                                   (do-many (point-to "player")
+                                                            (set-speed 0)
+                                                            (stop-animation)
+                                                            (next-dialog complete-dialog #:sound SHORT-BLIP-SOUND)
+                                                            (if response-dialog (update-dialog response-dialog) (λ (g e) e))
+                                                            (remove-quest-component)
+                                                            ;(λ (g e)
+                                                            ;  (add-components e (on-key 'enter (do-many (update-dialog response-dialog)
+                                                            ;                                            (do-after-time 1 die)))))
+                                                            ))))
+  (flatten (list (storage (~a "quest-component-" qid) quest-component)
+                 quest-component
+                 (and cutscene
+                      (let ([cutscene-component (on-key 'enter #:rule (and/r quest-rule?
+                                                                             npc-last-dialog?)
+                                                        (do-many (spawn cutscene #:relative? #f)
+                                                                 (remove-cutscene-component)))])
+                        (list (storage (~a "cutscene-component-" qid) cutscene-component)
+                              cutscene-component))))))
 
 (define (quest-complete? #:quest-giver npc-name
                          #:quest-item item-name)
