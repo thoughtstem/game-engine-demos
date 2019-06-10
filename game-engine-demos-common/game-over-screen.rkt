@@ -10,7 +10,7 @@
 (define player-dead?
   (handler g e (not (get-entity "player" g))))
 
-(define title-font (make-font #:size 24 #:face "DejaVu Sans Mono" #:family 'modern #:weight 'bold))
+(define title-font (make-font #:size 24 #:face MONOSPACE-FONT-FACE #:family 'modern #:weight 'bold))
 (register-fonts! title-font)
 (precompile! (square 1 'solid 'red)
              (square 1 'solid 'green))
