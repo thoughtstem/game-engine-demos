@@ -16,7 +16,7 @@
              (square 1 'solid 'green))
 
 (define (end-screen w h msg color)
-  (append (list (new-sprite (text-frame msg #:font title-font #:color 'black) #:y-offset -8))
+  (append (list (new-sprite (text-frame msg #:font title-font #:color 'black)))
           (bordered-box-sprite (* 18 (+ 2 (string-length msg)))
                                48
                                #:color color))
