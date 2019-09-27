@@ -45,6 +45,7 @@
                                (hidden)
                                (on-start (do-many (go-to-pos 'center)
                                                   show))
+                               (on-sprite-click die)
                                (on-key 'enter die)
                                (on-key 'space die)
                                (on-key "i" die)))
